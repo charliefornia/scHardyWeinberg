@@ -13,8 +13,8 @@ load("~/Seurat.Robj")
 seurat_obj_rep <- subset(INPUT_seurat_obj, subset = orig.ident == "rep1")
 
 # combine _LTR with the main TE (note that additional LTRs like e.g. ...A_LTR will NOT be combined)
-seurat_obj_rep@assays$RNA@counts[grep("TE-", rownames(seurat_obj_rep@assays$RNA@counts), value = T),] -> TE_mat
-seurat_obj_rep@assays$RNA@counts[grep("TE-", rownames(seurat_obj_rep@assays$RNA@counts), value = T, invert = T),] -> GENE_mat
+as.matrix(seurat_obj_rep@assays$TES@counts) -> TE_mat
+as.matrix(seurat_obj_rep@assays$GENES@counts) -> GENE_mat
 rownames(TE_mat) <- gsub("-LTR", "", rownames(TE_mat))
 t(sapply(by(TE_mat,rownames(TE_mat),colSums),identity)) -> new_TE_mat
 rbind(GENE_mat, new_TE_mat) -> new_mat
@@ -76,7 +76,7 @@ run_scHW <- function(seurat_mat) {
 # STEP4
 # run function and save output to file
 
-run_scHW(seurat_obj = new_mat) -> SAMPLENAME_HWCoef_rep1
+run_scHW(seurat_mat = new_mat) -> SAMPLENAME_HWCoef_rep1
 save(SAMPLENAME_HWCoef_rep1, file = "~/SAMPLENAME_HWCoef_rep1.Robj")
 
 # STEP5
