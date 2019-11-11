@@ -102,11 +102,11 @@ save(SAMPLENAME_HWCoef_combined, file = "~/SAMPLENAME_HWCoef_combined.Robj")
 load("~/SAMPLENAME_HWCoef_combined.Robj")
 mu_vec <- apply(SAMPLENAME_HWCoef_combined, c(1), mean, na.rm = TRUE)
 
-read.csv("~/Dropbox/CloudDesktop/input.tsv", header = F, sep = "\t") -> input_list
+read.csv("~/list_of_pairs_to_test.tsv", header = F, sep = "\t") -> input_list
 
 for(i in 1:nrow(input_list)) {
-  if(length(unique(NOV2017_DS_combined_HWCoef_combined[input_list[i,1], input_list[i,2],]))>2 & !is.na(as.numeric(mu_vec[as.character(input_list[i,1])]))){  
-    t.test(NOV2017_DS_combined_HWCoef_combined[input_list[i,1], input_list[i,2],], mu = as.numeric(mu_vec[as.character(input_list[i,1])]), alternative = "greater")$p.value -> input_list[i,3]
+  if(length(unique(SAMPLENAME_HWCoef_combined[input_list[i,1], input_list[i,2],]))>2 & !is.na(as.numeric(mu_vec[as.character(input_list[i,1])]))){  
+    t.test(SAMPLENAME_HWCoef_combined[input_list[i,1], input_list[i,2],], mu = as.numeric(mu_vec[as.character(input_list[i,1])]), alternative = "greater")$p.value -> input_list[i,3]
   }
 }
 
@@ -115,12 +115,12 @@ p.adjust(input_list[,3], method = "BH") -> input_list[,4]
 # for random gene-te pairs
 for(r in seq(5,23,2)){
   for(i in 1:nrow(input_list)) {
-    sample(1:length(NOV2017_DS_combined_HWCoef_combined[,1,1]), size = 1) -> random_number
-    rownames(NOV2017_DS_combined_HWCoef_combined)[random_number] -> input_list[i,r]
-    if(length(unique(NOV2017_DS_combined_HWCoef_combined[input_list[i,1], rownames(NOV2017_DS_combined_HWCoef_combined)[random_number],]))>2 & !is.na(as.numeric(mu_vec[as.character(input_list[i,1])]))){  
-      t.test(NOV2017_DS_combined_HWCoef_combined[input_list[i,1], rownames(NOV2017_DS_combined_HWCoef_combined)[random_number],], mu = as.numeric(mu_vec[as.character(input_list[i,1])]), alternative = "greater")$p.value -> input_list[i,r+1]
+    sample(1:length(SAMPLENAME_HWCoef_combined[,1,1]), size = 1) -> random_number
+    rownames(SAMPLENAME_HWCoef_combined)[random_number] -> input_list[i,r]
+    if(length(unique(SAMPLENAME_HWCoef_combined[input_list[i,1], rownames(SAMPLENAME_HWCoef_combined)[random_number],]))>2 & !is.na(as.numeric(mu_vec[as.character(input_list[i,1])]))){  
+      t.test(SAMPLENAME_HWCoef_combined[input_list[i,1], rownames(SAMPLENAME_HWCoef_combined)[random_number],], mu = as.numeric(mu_vec[as.character(input_list[i,1])]), alternative = "greater")$p.value -> input_list[i,r+1]
     }
   }
 }
 
-write.table(input_list, file = "~/Dropbox/CloudDesktop/output.tsv", quote = F, row.names = F, col.names = FALSE, sep = "\t")
+write.table(input_list, file = "~/output.tsv", quote = F, row.names = F, col.names = FALSE, sep = "\t")
